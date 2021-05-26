@@ -1,6 +1,8 @@
 package org.adridadou.ethereum.propeller.values;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by davidroon on 03.02.17.
@@ -9,6 +11,7 @@ import java.util.List;
 public class TransactionReceipt {
     public final EthHash hash;
     public final EthHash blockHash;
+    public final Optional<BigInteger> blockNumber;
     public final EthAddress sender;
     public final EthAddress receiveAddress;
     public final EthAddress contractAddress;
@@ -19,9 +22,10 @@ public class TransactionReceipt {
     public final List<EventData> events;
     public final EthValue ethValue;
 
-    public TransactionReceipt(EthHash hash, EthHash blockHash, EthAddress sender, EthAddress receiveAddress, EthAddress contractAddress, EthData callData, String error, EthData executionResult, boolean isSuccessful, List<EventData> events, EthValue ethValue) {
+    public TransactionReceipt(EthHash hash, EthHash blockHash, Optional<BigInteger> blockNumber, EthAddress sender, EthAddress receiveAddress, EthAddress contractAddress, EthData callData, String error, EthData executionResult, boolean isSuccessful, List<EventData> events, EthValue ethValue) {
         this.hash = hash;
         this.blockHash = blockHash;
+        this.blockNumber = blockNumber;
         this.sender = sender;
         this.receiveAddress = receiveAddress;
         this.contractAddress = contractAddress;

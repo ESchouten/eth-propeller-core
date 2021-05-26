@@ -12,6 +12,7 @@ import org.ethereum.vm.LogInfo;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -38,12 +39,13 @@ public class EthJEventListener extends EthereumListenerAdapter {
         }).collect(Collectors.toList());
     }
 
-    static org.adridadou.ethereum.propeller.values.TransactionReceipt toReceipt(TransactionReceipt transactionReceipt, EthHash blockHash) {
+    static org.adridadou.ethereum.propeller.values.TransactionReceipt toReceipt(TransactionReceipt transactionReceipt, EthHash blockHash, Optional<BigInteger> blockNumber) {
         Transaction tx = transactionReceipt.getTransaction();
         EthValue value = tx.getValue().length == 0 ? EthValue.wei(0) : EthValue.wei(new BigInteger(1, tx.getValue()));
         return new org.adridadou.ethereum.propeller.values.TransactionReceipt(
                 EthHash.of(tx.getHash()),
                 blockHash,
+                blockNumber,
                 EthAddress.of(tx.getSender()),
                 EthAddress.of(tx.getReceiveAddress()),
                 EthAddress.of(tx.getContractAddress()),
@@ -57,17 +59,17 @@ public class EthJEventListener extends EthereumListenerAdapter {
     public void onBlock(Block block, List<TransactionReceipt> receipts) {
         EthHash blockHash = EthHash.of(block.getHash());
         eventHandler.onBlock(new BlockInfo(block.getNumber(), block.getTimestamp(), receipts.stream()
-                .map(tx -> EthJEventListener.toReceipt(tx, blockHash))
+                .map(tx -> EthJEventListener.toReceipt(tx, blockHash, Optional.of(BigInteger.valueOf(block.getNumber()))))
                 .collect(Collectors.toList())));
 
-        receipts.forEach(receipt -> eventHandler.onTransactionExecuted(new TransactionInfo(EthHash.of(receipt.getTransaction().getHash()), toReceipt(receipt, blockHash), TransactionStatus.Executed, blockHash)));
+        receipts.forEach(receipt -> eventHandler.onTransactionExecuted(new TransactionInfo(EthHash.of(receipt.getTransaction().getHash()), toReceipt(receipt, blockHash, Optional.of(BigInteger.valueOf(block.getNumber()))), TransactionStatus.Executed, blockHash)));
     }
 
     @Override
     public void onPendingTransactionUpdate(TransactionReceipt txReceipt, PendingTransactionState state, Block block) {
         switch (state) {
             case DROPPED:
-                eventHandler.onTransactionDropped(new TransactionInfo(EthHash.of(txReceipt.getTransaction().getHash()), toReceipt(txReceipt, EthHash.empty()), TransactionStatus.Dropped, EthHash.empty()));
+                eventHandler.onTransactionDropped(new TransactionInfo(EthHash.of(txReceipt.getTransaction().getHash()), toReceipt(txReceipt, EthHash.empty(), Optional.of(BigInteger.valueOf(block.getNumber()))), TransactionStatus.Dropped, EthHash.empty()));
                 break;
             default:
                 break;
