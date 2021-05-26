@@ -28,6 +28,11 @@
     <repositories>
 
         <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+
+        <repository>
             <id>Adridadou</id>
             <name>Repository from Bintray for Adridadou</name>
             <url>http://dl.bintray.com/cubefriendly/maven</url>
@@ -185,16 +190,29 @@
             <artifactId>ethereumj-core</artifactId>
             <version>1.12.0-RELEASE</version>
             <scope>test</scope>
+
             <exclusions>
-                <exclusion>
-                    <groupId>org.ethereum</groupId>
-                    <artifactId>solcJ-all</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.ethereum</groupId>
                     <artifactId>rocksdbjni</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.ethereum</groupId>
+                    <artifactId>solcJ-all</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.ether-camp</groupId>
+            <artifactId>solcJ</artifactId>
+            <version>v0.4.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.rocksdb</groupId>
+            <artifactId>rocksdbjni</artifactId>
+            <version>5.9.2</version>
         </dependency>
 
         <dependency>
