@@ -185,6 +185,16 @@
             <artifactId>ethereumj-core</artifactId>
             <version>1.12.0-RELEASE</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ethereum</groupId>
+                    <artifactId>solcJ-all</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.ethereum</groupId>
+                    <artifactId>rocksdbjni</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
