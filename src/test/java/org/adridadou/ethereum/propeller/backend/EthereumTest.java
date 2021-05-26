@@ -197,7 +197,7 @@ public class EthereumTest implements EthereumBackend {
         return Optional.ofNullable(blockchain.getBlockchain().getTransactionInfo(hash.data)).map(info -> {
             EthHash blockHash = EthHash.of(info.getBlockHash());
             TransactionStatus status = info.isPending() ? TransactionStatus.Pending : blockHash.isEmpty() ? TransactionStatus.Unknown : TransactionStatus.Executed;
-            return new TransactionInfo(hash, EthJEventListener.toReceipt(info.getReceipt(), blockHash), status, blockHash);
+            return new TransactionInfo(hash, EthJEventListener.toReceipt(info.getReceipt(), blockHash, Optional.of(BigInteger.valueOf(this.getBlock(blockHash).get().blockNumber))), status, blockHash);
         });
     }
 
@@ -216,15 +216,16 @@ public class EthereumTest implements EthereumBackend {
 
     BlockInfo toBlockInfo(Block block) {
         return new BlockInfo(block.getNumber(), block.getTimestamp(), block.getTransactionsList().stream()
-                .map(tx -> this.toReceipt(tx, EthHash.of(block.getHash()))).collect(Collectors.toList()));
+                .map(tx -> this.toReceipt(tx, EthHash.of(block.getHash()), Optional.of(BigInteger.valueOf(block.getNumber())))).collect(Collectors.toList()));
     }
 
-    private TransactionReceipt toReceipt(Transaction tx, EthHash blockHash) {
+    private TransactionReceipt toReceipt(Transaction tx, EthHash blockHash, Optional<BigInteger> blockNumber) {
         EthValue value = tx.getValue().length == 0 ? EthValue.wei(0) : EthValue.wei(new BigInteger(1, tx.getValue()));
         List<LogInfo> logs = blockchain.getBlockchain().getTransactionInfo(tx.getHash()).getReceipt().getLogInfoList();
         return new TransactionReceipt(
                 EthHash.of(tx.getHash()),
                 blockHash,
+                blockNumber,
                 EthAddress.of(tx.getSender()),
                 EthAddress.of(tx.getReceiveAddress()),
                 EthAddress.empty(),
